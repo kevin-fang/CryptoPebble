@@ -23,10 +23,10 @@ ajax({ url: poloniexUrl, type: 'json'},
     function(data) {
       var btcPrice = data['USDT_BTC'].last;
       var ethPrice = data['USDT_ETH'].last;
+     // var ltcPrice = data['USDT_LTC'].last;
       
       card.body("BTC: $" + btcPrice + '\nETH: $' + ethPrice);
       card.title('CryptoTicker');
       card.subtitle('');
       Vibe.vibrate('short');
-      card.show();
     });
