@@ -4,39 +4,48 @@
  * This is where you write your app.
  */
 
+/* jshint sub: true, unused: false */
+
 var UI = require('ui');
 var Vibe = require('ui/vibe');
+var ApiCall = require('./api.js');
 
 var main = new UI.Card({
   title: 'CryptoTicker',
-  subtitle: 'Loading..',
-  body: 'Please wait...'
+  body: 'Up: Poloniex\nMiddle: Bitfinex\nBottom: GDAX'
 });
 
 main.show();
 
-var ajax = require('ajax');
-var poloniexUrl = "https://poloniex.com/public?command=returnTicker";
-/*jshint sub: true*/
-
-function updateScreen() {
-  ajax({ url: poloniexUrl, type: 'json'},
-      function(data) {
-        var btcPrice = data['USDT_BTC'].last;
-        var ethPrice = data['USDT_ETH'].last;
-       // var ltcPrice = data['USDT_LTC'].last;
-        
-        main.body("BTC: $" + btcPrice + '\nETH: $' + ethPrice);
-        main.title('CryptoTicker');
-        main.subtitle('');
-        Vibe.vibrate('short');
-      });
+function setMainDisplay(priceObject, name) {
+  main.body("BTC: $" + priceObject.btc + '\nETH: $' + priceObject.eth + '\nLTC: $' + priceObject.ltc);
+  main.subtitle('');
+  Vibe.vibrate('short');
 }
 
-updateScreen();
-
+// bitfinex
 main.on('click', 'select', function(e) {
+  if (e) console.log(e);
+  main.title("Bitfinex");
   main.subtitle("Loading");
   main.body("Please wait...");
-  updateScreen();
+  ApiCall.getBitfinex(setMainDisplay);
+});
+
+// poloniex
+main.on('click', 'up', function(e) {
+  if (e) console.log(e);
+  main.title("Poloniex");
+  main.subtitle("Loading");
+  main.body("Please wait...");
+  ApiCall.getPoloniex(setMainDisplay, "Poloniex");
+});
+
+// gdax
+main.on('click', 'down', function(e) {
+  if (e) console.log(e);
+  main.title("GDAX");
+  main.subtitle("Loading");
+  main.body("Please wait...");
+  ApiCall.getGdax(setMainDisplay, "GDAX");
 });
