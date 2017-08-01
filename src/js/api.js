@@ -48,7 +48,7 @@ function getBitfinex(callback, name) {
 }
 
 module.exports = {
-  getGdax: getGdax,
-  getPoloniex: getPoloniex,
-  getBitfinex: getBitfinex
+  gdax: getGdax,
+  poloniex: getPoloniex,
+  bitfinex: getBitfinex
 };

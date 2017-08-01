@@ -1,7 +1,6 @@
 /**
  * Welcome to Pebble.js!
  *
- * This is where you write your app.
  */
 
 /* jshint sub: true, unused: false */
@@ -9,10 +8,12 @@
 var UI = require('ui');
 var Vibe = require('ui/vibe');
 var ApiCall = require('./api.js');
+var exchanges = ["GDAX", "Poloniex", "Bitfinex"];
+var defaultExchange = exchanges[0]; // "GDAX", "Poloniex", or "Bitfinex". If anything else, will display main screen
+
 
 var main = new UI.Card({
-  title: 'CryptoTicker',
-  body: 'Up: Poloniex\nMiddle: Bitfinex\nBottom: GDAX'
+  body: 'Poloniex ->\n\nBitfinex ->\n\nGDAX ->'
 });
 
 main.show();
@@ -23,29 +24,42 @@ function setMainDisplay(priceObject, name) {
   Vibe.vibrate('short');
 }
 
-// bitfinex
-main.on('click', 'select', function(e) {
+function setInitial(title, e) {
   if (e) console.log(e);
-  main.title("Bitfinex");
+  main.title(title);
   main.subtitle("Loading");
   main.body("Please wait...");
-  ApiCall.getBitfinex(setMainDisplay);
+}
+
+if (defaultExchange == "GDAX" || defaultExchange == "Poloniex" || defaultExchange == "Bitfinex") {
+  setInitial(defaultExchange, null);
+  switch(defaultExchange) {
+    case "GDAX":
+      ApiCall.gdax(setMainDisplay);
+      break;
+    case "Poloniex":
+      ApiCall.poloniex(setMainDisplay);
+      break;
+    case "Bitfinex":
+      ApiCall.bitfinex(setMainDisplay);
+      break;
+  }
+}
+
+// bitfinex
+main.on('click', 'select', function(e) {
+  setInitial("Bitfinex", e);
+  ApiCall.bitfinex(setMainDisplay);
 });
 
 // poloniex
 main.on('click', 'up', function(e) {
-  if (e) console.log(e);
-  main.title("Poloniex");
-  main.subtitle("Loading");
-  main.body("Please wait...");
-  ApiCall.getPoloniex(setMainDisplay, "Poloniex");
+  setInitial("Poloniex", e);
+  ApiCall.poloniex(setMainDisplay);
 });
 
 // gdax
 main.on('click', 'down', function(e) {
-  if (e) console.log(e);
-  main.title("GDAX");
-  main.subtitle("Loading");
-  main.body("Please wait...");
-  ApiCall.getGdax(setMainDisplay, "GDAX");
+  setInitial("GDAX", e);
+  ApiCall.gdax(setMainDisplay);
 });
